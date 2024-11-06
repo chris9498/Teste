@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revelação com Lupa Circular e Imagem Sobreposta Ampliada</title>
+    <style>
+        /* Estilo para o container */
+        .image-container {
+            position: relative;
+            width: 2480px; /* Novo tamanho do container */
+            height: 3508px; /* Novo tamanho do container */
+            overflow: hidden;
+            cursor: none; /* Remove o ponteiro do mouse */
+        }
+
+        /* Imagem superior */
+        .image-top {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        /* Imagem inferior */
+        .image-bottom {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Efeito de lupa circular */
+        .lupa {
+            position: absolute;
+            width: 500px; /* Tamanho da lupa */
+            height: 500px; /* Tamanho da lupa */
+            border-radius: 50%; /* Formato circular */
+            pointer-events: none; /* Não captura eventos do mouse */
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            background-image: url('https://i.imgur.com/zPU4dku.jpeg'); /* Nova imagem revelada pela lupa */
+            background-size: 2480px 3508px; /* Ajuste para novo tamanho da imagem */
+            background-repeat: no-repeat;
+            display: none;
+            border: 3px solid rgba(255, 255, 255, 0.5); /* Borda branca semi-transparente */
+        }
+
+        /* Sobreposição de imagem para a lupa */
+        .lupa-overlay {
+            position: absolute;
+            width: 1373px; /* Aumento de 45% no tamanho da imagem sobreposta */
+            height: 1373px; /* Aumento de 45% no tamanho da imagem sobreposta */
+            pointer-events: none; /* Não captura eventos do mouse */
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            background-image: url('https://i.imgur.com/G0Af5sN.png'); /* Nova imagem sobreposta */
+            background-size: cover; /* Cobre completamente o elemento */
+            display: none;
+        }
+
+        /* Media Query para dispositivos móveis */
+        @media (max-width: 768px) {
+            .lupa {
+                left: calc(50% - 200px); /* Desloca o círculo de revelação 200px para a esquerda */
+            }
+            .lupa-overlay {
+                left: calc(50% - 200px); /* Desloca a imagem sobreposta 200px para a esquerda */
+            }
+        }
+
+        /* Imagem de fundo com Neymar */
+        body {
+            background-image: url('https://i.imgur.com/NeymarImage.jpg'); /* Substitua pelo link da imagem do Neymar */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        html, body {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container" id="image-container">
+        <!-- Nova imagem de cima -->
+        <img src="https://i.imgur.com/pux1S2f.jpeg" class="image-top" alt="Imagem de Cima">
+        <!-- Nova imagem de baixo -->
+        <img src="https://i.imgur.com/zPU4dku.jpeg" alt="Imagem de Baixo" class="image-bottom">
+        <!-- Elemento de lupa circular -->
+        <div class="lupa" id="lupa"></div>
+        <!-- Sobreposição de imagem da lupa -->
+        <div class="lupa-overlay" id="lupa-overlay"></div>
+    </div>
+
+    <script>
+        const imageContainer = document.getElementById('image-container');
+        const lupa = document.getElementById('lupa');
+        const lupaOverlay = document.getElementById('lupa-overlay');
+
+        // Função para tratar o movimento da lupa
+        function moveLupa(event) {
+            const rect = imageContainer.getBoundingClientRect();
+            let x = event.clientX ? event.clientX - rect.left : event.touches[0].clientX - rect.left; // Ajuste para mouse e toque
+            let y = event.clientY ? event.clientY - rect.top : event.touches[0].clientY - rect.top; // Ajuste para mouse e toque
+
+            // Define os limites para evitar que a lupa vá além das bordas da imagem
+            const lupaRadius = 250; // Metade do tamanho da lupa (500px)
+            x = Math.max(lupaRadius, Math.min(x, imageContainer.clientWidth - lupaRadius));
+            y = Math.max(lupaRadius, Math.min(y, imageContainer.clientHeight - lupaRadius));
+
+            lupa.style.display = 'block'; // Torna a lupa visível
+            lupaOverlay.style.display = 'block'; // Torna a sobreposição visível
+
+            // Define a posição da lupa e da sobreposição
+            lupa.style.left = `${x}px`;
+            lupa.style.top = `${y}px`;
+            lupaOverlay.style.left = `${x}px`;
+            lupaOverlay.style.top = `${y}px`;
+
+            // Ajuste a posição do background da lupa para centralizar corretamente
+            lupa.style.backgroundPosition = `-${x - lupaRadius}px -${y - lupaRadius}px`;
+        }
+
+        // Eventos para movimentar a lupa
+        imageContainer.addEventListener('mousemove', moveLupa); // Para desktops
+        imageContainer.addEventListener('touchmove', moveLupa); // Para dispositivos móveis
+
+        imageContainer.addEventListener('mouseleave', () => {
+            lupa.style.display = 'none'; // Oculta a lupa ao sair do container
+            lupaOverlay.style.display = 'none'; // Oculta a sobreposição ao sair do container
+        });
+
+        imageContainer.addEventListener('touchend', () => {
+            lupa.style.display = 'none'; // Oculta a lupa ao terminar o toque
+            lupaOverlay.style.display = 'none'; // Oculta a sobreposição ao terminar o toque
+        });
+    </script>
+</body>
+</html>
